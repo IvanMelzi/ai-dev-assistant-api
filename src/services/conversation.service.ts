@@ -16,3 +16,19 @@ export async function getConversation(id: string) {
     },
   })
 }
+
+export async function getConversations() {
+  return prisma.conversation.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+        include: {
+      messages: {
+        orderBy: {
+          createdAt: 'asc',
+        },
+        take: 1,
+      },
+    },
+  })
+}
