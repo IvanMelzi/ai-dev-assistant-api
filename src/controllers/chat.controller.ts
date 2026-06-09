@@ -1,25 +1,66 @@
-import { Request, Response } from 'express';
-
-import { generateResponse } from '../services/chat.service';
-import { saveMessage } from '../services/message.service';
-import { searchDocuments } from '../utils/searchDocuments';
+import { Request, Response } from 'express'
+import { streamChat } from '../services/ai.service'
+import { saveMessage } from '../services/message.service'
+import { planUserRequest } from '../services/planner.service'
+import { buildContext } from '../services/context-builder.service'
+import { runAgent } from '../services/agent.service'
 
 export async function chatController(req: Request, res: Response) {
-    const { conversationId, message } = req.body;
+  const { conversationId, message } = req.body
 
-    await saveMessage(conversationId, 'user', message);
+  await saveMessage(conversationId, 'user', message)
 
-    const relevantDocs = await searchDocuments(message);
+  const plan = await planUserRequest(message)
 
-    const context = relevantDocs
-        .map((item) => item.document.content)
-        .join('\n\n');
+  console.log('Planner result:', plan)
 
-    const assistantResponse = await generateResponse(message, context);
+  const context = await buildContext(
+    plan,
+    message,
+  )
 
-    await saveMessage(conversationId, 'assistant', assistantResponse);
+  const stream = await streamChat([
+    {
+      role: 'system',
+      content: `
+    You are an AI assistant.
 
-    res.json({
-        message: assistantResponse,
-    });
+    Planner action:
+    ${plan.action}
+
+    Planner reason:
+    ${plan.reason}
+
+    Retrieved Context:
+    ${context}
+      `,
+    },
+    {
+      role: 'user',
+      content: message,
+    },
+  ])
+
+  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Transfer-Encoding', 'chunked')
+
+  const response = await runAgent(
+    'Busca conversaciones sobre embeddings',
+  )
+
+  console.log(response)
+
+  let fullResponse = ''
+
+  for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content || ''
+
+    fullResponse += content
+
+    res.write(content)
+  }
+
+  await saveMessage(conversationId, 'assistant', fullResponse)
+
+  res.end()
 }
