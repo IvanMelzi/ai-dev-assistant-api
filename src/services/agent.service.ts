@@ -1,25 +1,34 @@
 import OpenAI from 'openai'
 import { tools, executeToolCall } from './tools.service'
+import { getConversationHistory } from './conversation-history.service'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
-export async function runAgent(message: string) {
-  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    {
-      role: 'system',
-      content: `
+export async function runAgent(conversationId: string, message: string) {
+
+  const history = await getConversationHistory(conversationId)
+
+const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+  {
+    role: 'system',
+    content: `
 You are an AI assistant.
 
+Use recent conversation history to answer follow-up questions.
 Use tools whenever they help answer the question.
 `,
-    },
-    {
-      role: 'user',
-      content: message,
-    },
-  ]
+  },
+  ...history.map((msg) => ({
+    role: msg.role as 'user' | 'assistant',
+    content: msg.content,
+  })),
+  {
+    role: 'user',
+    content: message,
+  },
+]
 
   const firstResponse =
     await openai.chat.completions.create({

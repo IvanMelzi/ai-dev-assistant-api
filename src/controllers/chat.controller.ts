@@ -44,9 +44,10 @@ export async function chatController(req: Request, res: Response) {
   res.setHeader('Content-Type', 'text/plain')
   res.setHeader('Transfer-Encoding', 'chunked')
 
-  const response = await runAgent(
-    'Busca conversaciones sobre embeddings',
-  )
+  const response = await runAgent(conversationId, message)
+
+  await saveMessage(conversationId, 'user', message)
+  await saveMessage(conversationId, 'assistant', response)
 
   console.log(response)
 
