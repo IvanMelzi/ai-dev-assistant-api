@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
-import { runChatWithTools, streamChat } from '../services/ai.service'
+import { runChatWithTools } from '../services/ai.service'
 import { saveMessage } from '../services/message.service'
-import { searchDocuments } from '../utils/searchDocuments'
+import { searchDocumentsWithQdrant } from '../utils/searchDocuments'
 
 export async function chatControllerWithTools(req: Request, res: Response) {
   const { conversationId, message } = req.body
 
   await saveMessage(conversationId, 'user', message)
 
-  const relevantDocs = await searchDocuments(message)
+  // const relevantDocs = await searchDocuments(message)
+  const relevantDocs = await searchDocumentsWithQdrant(message)
 
   const context = relevantDocs
     .map((item) => item.document.content)
@@ -20,8 +21,12 @@ export async function chatControllerWithTools(req: Request, res: Response) {
       content: `
         You are an AI assistant.
 
-        Use the following context to answer the user's question.
-        If the answer is not in the context, say that you don't have enough information.
+        Answer ONLY using the provided context.
+
+        If the answer is not present in the context,
+        say:
+
+        "I don't have enough information in the knowledge base."
 
         Context:
         ${context}

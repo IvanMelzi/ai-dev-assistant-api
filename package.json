@@ -5,17 +5,23 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create:collection": "tsx src/scripts/createCollection.ts",
+    "load:documents": "tsx src/scripts/loadDocuments.ts",
+    "search:documents": "tsx src/scripts/searchDocuments.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@langchain/openai": "^1.4.7",
     "@prisma/client": "^6.19.3",
+    "@qdrant/js-client-rest": "^1.18.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "langchain": "^1.4.5",
     "openai": "^6.41.0",
     "prisma": "^6.19.3"
   },
@@ -24,6 +30,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   }
 }
