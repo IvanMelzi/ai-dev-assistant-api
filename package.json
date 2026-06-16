@@ -13,7 +13,9 @@
     "test:prompt": "tsx src/scripts/testPrompt.ts",
     "test:chain": "tsx src/scripts/testChain.ts",
     "test:retriever": "tsx src/scripts/testRetriever.ts",
-    "test:rag": "tsx src/scripts/testRag.ts"
+    "test:rag": "tsx src/scripts/testRag.ts",
+    "test:simple-agent": "tsx src/scripts/testSimpleAgent.ts",
+    "test:tool-agent": "tsx src/scripts/testToolAgent.ts"
   },
   "keywords": [],
   "author": "",
