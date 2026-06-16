@@ -8,14 +8,21 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "create:collection": "tsx src/scripts/createCollection.ts",
     "load:documents": "tsx src/scripts/loadDocuments.ts",
-    "search:documents": "tsx src/scripts/searchDocuments.ts"
+    "search:documents": "tsx src/scripts/searchDocuments.ts",
+    "test:langchain": "tsx src/scripts/testLangChain.ts",
+    "test:prompt": "tsx src/scripts/testPrompt.ts",
+    "test:chain": "tsx src/scripts/testChain.ts",
+    "test:retriever": "tsx src/scripts/testRetriever.ts",
+    "test:rag": "tsx src/scripts/testRag.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@langchain/core": "^1.1.49",
     "@langchain/openai": "^1.4.7",
+    "@langchain/qdrant": "^1.0.3",
     "@prisma/client": "^6.19.3",
     "@qdrant/js-client-rest": "^1.18.0",
     "cors": "^2.8.6",
